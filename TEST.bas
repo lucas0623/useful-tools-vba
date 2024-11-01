@@ -1,6 +1,6 @@
 Attribute VB_Name = "TEST"
 Private genFuncs As clsGeneralFunctions
-'Try sync project
+
 Sub TESTING()
     Set genFuncs = New clsGeneralFunctions
     Dim i As Long, var As Variant ', arrL As Object

@@ -185,7 +185,7 @@ Function DeDupeOneDimArray(vArray As Variant, Optional isExcludeEmpty As Boolean
   If isExcludeEmpty Then oDict.Remove ("")
   On Error GoTo 0
   
-  DeDupeOneDimArray = oDict.keys()
+  DeDupeOneDimArray = oDict.Keys()
 End Function
 
 Function DeDupeTwoDimArray(vArray As Variant, Optional isExcludeEmpty As Boolean = True, Optional excludeArr As Variant) As Variant
@@ -206,7 +206,7 @@ Function DeDupeTwoDimArray(vArray As Variant, Optional isExcludeEmpty As Boolean
     Next i
   End If
   
-  DeDupeTwoDimArray = oDict.keys()
+  DeDupeTwoDimArray = oDict.Keys()
 End Function
 
 

@@ -32,7 +32,7 @@ Sub CreateGSAListFromSectionProp()
     rng_output.Value = "List Name"
     rng_output.Worksheet.Cells(rng_output.row, rng_output.Column + 1) = "Type"
     rng_output.Worksheet.Cells(rng_output.row, rng_output.Column + 2) = "Definition"
-    For Each key In dict_GSAList.keys
+    For Each key In dict_GSAList.Keys
         tempStr = ""
         If genFunc.isInitialised(dict_GSAList(key)) Then
             For i = LBound(dict_GSAList(key)) To UBound(dict_GSAList(key))
