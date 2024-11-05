@@ -1,0 +1,54 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui">
+<ribbon>
+<tabs>
+
+<tab id = "first_tab" label = "Useful Tools">
+	<group id = "group1" label = "Formatting Table">
+			<button id = "btn_BoldMax" label = "Bold Maximum Rows in Same Group" imageMso = "TableRowSelect" onAction ="ProcessRibbon_UsefulTools"/>
+			<button id = "btn_AddBotBorder" label = "Add Bottom Borders in Same Group" imageMso = "BorderBottom" onAction = "ProcessRibbon_UsefulTools"/>
+			<button id = "btn_ClrBotBorder" label = "Clear Bottom Border in Selection" imageMso = "Delete" onAction ="ProcessRibbon_UsefulTools"/>
+			<button id = "btn_ClrRightBorder" label = "Clear Right Border  in Selection" imageMso = "Delete" onAction ="ProcessRibbon_UsefulTools"/>
+			<button id = "btn_MergeSameIdentity" label =  "Merge Cells With Same Identity in Column" imageMso = "MergeCells" onAction="ProcessRibbon_UsefulTools"/>
+	</group>
+
+	<group id = "group2" label = "Formatting Page">
+			<button id = "btn_AddBotBorderAtPageBreak" label =  "Add Bottom Border at Page Break" imageMso = "PageBreakInsertOrRemove" onAction="ProcessRibbon_UsefulTools"/>
+			<button id = "btn_SetupFooter" label =  "Setup Footer" imageMso = "HeaderOrFooterShow" onAction="ProcessRibbon_UsefulTools"/>
+	</group>
+
+	<group id = "group3" label = "Named Range">
+		<button id = "btn_CopyDefinedNames" label =  "Copy Defined Names" imageMso = "GroupCopy" onAction="ProcessRibbon_UsefulTools"/>
+		<button id = "btn_ChangeNamesScopeLocalToGlobal" label =  "Change Scope - Local to Global" imageMso = "DiagramCycleInsertClassic" onAction="ProcessRibbon_UsefulTools"/>
+		<button id = "btn_ChangeNamesScopeGlobalToLocal" label =  "Change Scope - Global to Local" imageMso = "DiagramCycleInsertClassic" onAction="ProcessRibbon_UsefulTools"/>
+	</group>
+
+
+	<group id = "group4" label = "Miscellaneous">
+		<button id = "btn_ShowCellCalculationStep" label =  "Show Cell's Calculation Step" imageMso = "Calculator" onAction="ProcessRibbon_UsefulTools"/>
+		<button id = "btn_ConvertCellRef" label =  "Convert Cell Reference" imageMso = "DiagramCycleInsertClassic" onAction="ProcessRibbon_UsefulTools"/>
+	</group>
+
+	<group id = "group5" label = "File System">
+		<button id = "btn_GetFilesInFolder" label =  "Get Files Name from Folder" imageMso = "FilePrintPreview" onAction="ProcessRibbon_UsefulTools"/>
+		<button id = "btn_ChangeFileName" label =  "Change Files Name from Folder" imageMso = "FileMenuPublishHeader" onAction="ProcessRibbon_UsefulTools"/>
+	</group>
+
+	<group id = "group6" label = "Graph">
+		<button id = "btn_Graph1" label =  "Format Graph" imageMso = "GroupChartStyles" onAction="ProcessRibbon_UsefulTools"/>
+		<button id = "btn_UpdateChartReference" label =  "Update Chart Reference" imageMso = "RefreshAll" onAction="ProcessRibbon_UsefulTools"
+		supertip = "Update the formula reference of ALL series of ALL charts to current worksheet."/>
+		<button id = "btn_UpdateAxisSpacing" label =  "Update Chart Axis Spacing" imageMso = "RefreshAll" onAction="ProcessRibbon_UsefulTools" 
+		supertip = "Update the axis spacing of ALL charts in current worksheet. (8 spacings)"/>	
+		<button id = "btn_SwapAxis" label =  "Swap xy Axis" imageMso = "PivotSwitchRowColumn" onAction="ProcessRibbon_UsefulTools" 
+		supertip = "Swap the x and y axis of the selected chart"/>	
+	</group>
+
+	<group id = "group8" label = "Info">
+		<button id = "btn_help" label =  "Help" imageMso = "Help" size = "large" onAction="ProcessRibbon_UsefulTools"/>
+		<button id = "btn_version" label =  "Version" imageMso = "Info" size = "large" onAction="ProcessRibbon_UsefulTools"/>
+	</group>
+</tab>
+
+</tabs>
+</ribbon>
+</customUI>
