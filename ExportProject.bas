@@ -37,7 +37,7 @@ Sub ExportAllVBAComponents()
         Set vbProj = selectedItem.VBProject
         
     ElseIf TypeName(selectedItem) = "AddIn" Then
-        Set vbProj = Workbooks(selectedItem.Name).VBProject
+        Set vbProj = Workbooks(selectedItem.Name)
     Else
         MsgBox "Selected item is not a valid workbook or add-in."
         Exit Sub

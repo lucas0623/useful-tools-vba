@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} UFBasic 
    Caption         =   "Information"
-   ClientHeight    =   2.45160e5
+   ClientHeight    =   3.06450e5
    ClientLeft      =   4950
    ClientTop       =   19560
    ClientWidth     =   2.45505e5

@@ -16,6 +16,56 @@ Attribute VB_Name = "F_CopyDefinedNames"
 '    Set name2 = ActiveSheet.Names.Add("ZZZ", "AAA")
 '    tempName.Delete
 'End Sub
+Sub TestDelNames()
+    Dim xName As Name
+    Dim ws As Worksheet
+    
+    ' Loop through each worksheet in the active workbook
+    For Each ws In ActiveWorkbook.Worksheets
+        Set xName = GetNameObjByString("_Table1_Out", ws)
+        If Not xName Is Nothing Then
+            Debug.Print xName.Name & " is deleted"
+            xName.Delete
+        End If
+        
+        Set xName = GetNameObjByString("_Table1_In1", ws)
+        If Not xName Is Nothing Then
+            Debug.Print xName.Name & " is deleted"
+            xName.Delete
+        End If
+        
+        Set xName = GetNameObjByString("_Table2_In1", ws)
+        If Not xName Is Nothing Then
+            Debug.Print xName.Name & " is deleted"
+            xName.Delete
+        End If
+        
+        Set xName = GetNameObjByString("_Table2_Out", ws)
+        If Not xName Is Nothing Then
+            Debug.Print xName.Name & " is deleted"
+            xName.Delete
+        End If
+        
+        Set xName = GetNameObjByString("__123Graph_A", ws)
+        If Not xName Is Nothing Then
+            Debug.Print xName.Name & " is deleted"
+            xName.Delete
+        End If
+        
+        Set xName = GetNameObjByString("__123Graph_X", ws)
+        If Not xName Is Nothing Then
+            Debug.Print xName.Name & " is deleted"
+            xName.Delete
+        End If
+        
+        Set xName = GetNameObjByString("_FilterDatabase", ws)
+        If Not xName Is Nothing Then
+            Debug.Print xName.Name & " is deleted"
+            xName.Delete
+        End If
+    Next ws
+    
+End Sub
 Sub WriteDefinedNamesToCell()
     Dim oWS As Worksheet, refRng As Range
     Dim rRow As Long, rCol As Long
