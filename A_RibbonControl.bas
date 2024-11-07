@@ -60,7 +60,11 @@ Public Sub ProcessRibbon_UsefulTools(Control As IRibbonControl)
             Z_Functions.FormulaConcat_to_CellFormula
         Case "btn_ConvertCellRef"
             ConverFormulaReferences
-        
+        Case "btn_ChangeSheetVisibility"
+            Z2_ChangeSheetVisibility.ManageSheetVisibilityInteractive
+        Case "btn_MathAutoCorrect"
+            Z3_MathAutoCorrect.AutoCorrectMathSymbols
+            
 '        Case "btn_CalSoilLoad"
 '            F_CalSoilLoad.CalSoilLoad
 '        Case "btn_ABS"
