@@ -3,8 +3,8 @@ Sub ManageSheetVisibilityInteractive()
 
     ' Kinen Ma
     ' 2024-11-07
-    ' Version 1.0
-    ' Interactivelly change sheet visibility, including very hidden sheet
+    ' Version 1.1
+    ' Interactively change sheet visibility, including very hidden sheets
 
     Dim ws As Worksheet
     Dim sheetList As String
@@ -16,12 +16,16 @@ Sub ManageSheetVisibilityInteractive()
     Dim currentVisibility As String
     Dim maxIndexLength As Integer
     Dim maxNameLength As Integer
+    Dim activeWb As Workbook
+
+    ' Use the active workbook
+    Set activeWb = ActiveWorkbook
 
     ' Determine max lengths for index and sheet name
-    For Each ws In ThisWorkbook.Worksheets
+    For Each ws In activeWb.Worksheets
         If Len(ws.Name) > maxNameLength Then maxNameLength = Len(ws.Name)
     Next ws
-    maxIndexLength = Len(CStr(ThisWorkbook.Worksheets.count))
+    maxIndexLength = Len(CStr(activeWb.Worksheets.count))
     
     ' Create header for the message box
     sheetList = "Index" & space(Application.Max(0, maxIndexLength + 2 - Len("Index"))) & _
@@ -30,8 +34,8 @@ Sub ManageSheetVisibilityInteractive()
     sheetList = sheetList & String(maxIndexLength + maxNameLength + 20, "-") & vbCrLf
 
     ' Enumerate sheets with visibility status
-    For i = 1 To ThisWorkbook.Worksheets.count
-        Set ws = ThisWorkbook.Worksheets(i)
+    For i = 1 To activeWb.Worksheets.count
+        Set ws = activeWb.Worksheets(i)
         Select Case ws.Visible
             Case xlSheetVisible
                 currentVisibility = "Visible"
@@ -49,15 +53,23 @@ Sub ManageSheetVisibilityInteractive()
     
     ' Combine sheet list display and sheet selection
     sheetIndexInput = inputBox("Sheets in this workbook:" & vbCrLf & sheetList & vbCrLf & _
-                               "Enter the number(s) of the sheets you want to modify, separated by commas:", "Select Sheet Numbers")
+                               "Enter the number(s) of the sheets you want to modify, separated by commas or spaces, or type 'all' to select all sheets:", "Select Sheet Numbers")
     
     If sheetIndexInput = "" Then
         MsgBox "No sheets selected.", vbExclamation
         Exit Sub
     End If
     
-    ' Split the input into an array of sheet indexes
-    sheetIndexes = Split(sheetIndexInput, ",")
+    ' Check if the user wants to select all sheets
+    If LCase(Trim(sheetIndexInput)) = "all" Then
+        ReDim sheetIndexes(1 To activeWb.Worksheets.count)
+        For i = 1 To activeWb.Worksheets.count
+            sheetIndexes(i) = i
+        Next i
+    Else
+        ' Split the input into an array of sheet indexes using regex to handle spaces and commas
+        sheetIndexes = Split(Replace(Replace(sheetIndexInput, ",", " "), "  ", " "), " ")
+    End If
     
     ' Get the visibility choice from the user
     visibilityChoice = inputBox("Enter the visibility option for the selected sheets:" & vbCrLf & "1. Visible" & vbCrLf & "2. Hidden" & vbCrLf & "3. Very Hidden", "Set Visibility")
@@ -79,8 +91,8 @@ Sub ManageSheetVisibilityInteractive()
         Dim sheetIndex As Integer
         sheetIndex = val(Trim(sheetIndexes(i)))
         
-        If sheetIndex > 0 And sheetIndex <= ThisWorkbook.Worksheets.count Then
-            Set ws = ThisWorkbook.Worksheets(sheetIndex)
+        If sheetIndex > 0 And sheetIndex <= activeWb.Worksheets.count Then
+            Set ws = activeWb.Worksheets(sheetIndex)
             ws.Visible = visibility
         Else
             MsgBox "Invalid sheet number: " & sheetIndexes(i), vbExclamation
