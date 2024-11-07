@@ -26,6 +26,8 @@
 	<group id = "group4" label = "Miscellaneous">
 		<button id = "btn_ShowCellCalculationStep" label =  "Show Cell's Calculation Step" imageMso = "Calculator" onAction="ProcessRibbon_UsefulTools"/>
 		<button id = "btn_ConvertCellRef" label =  "Convert Cell Reference" imageMso = "DiagramCycleInsertClassic" onAction="ProcessRibbon_UsefulTools"/>
+		<button id = "btn_ChangeSheetVisibility" label =  "Change Sheet Visibility" imageMso = "VisibilityVisible" onAction="ProcessRibbon_UsefulTools"/>
+		<button id = "btn_MathAutoCorrect" label =  "Math Auto Correct" imageMso = "AutoCorrect" onAction="ProcessRibbon_UsefulTools"/>
 	</group>
 
 	<group id = "group5" label = "File System">
