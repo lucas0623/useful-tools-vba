@@ -1,7 +1,7 @@
 Attribute VB_Name = "A_VersionControl"
 Sub ShowVersion()
 
-    MsgBox "Version 1.3.0 (05 Nov 2024)" & Chr(10) & "Arthor: Lucas LEUNG"
+    MsgBox "Version 1.3.0 (07 Nov 2024)" & Chr(10) & "Arthor: Lucas LEUNG & Kinen MA"
 End Sub
 
 Sub Help()
@@ -10,10 +10,6 @@ Sub Help()
 End Sub
 'Update History
 '****************************************************
-'Versin 1.3.0 (05 Nov 2024)
-'Publish to Github
-'Minor bug fixes
-
 'Version 1.2.0(02 Oct 2024)
 'Added functions for udpating chart series and swapping graph x-y axis.
 'updated the function of FormulaConcat

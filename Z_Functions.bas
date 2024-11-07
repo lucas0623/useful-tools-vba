@@ -1,6 +1,7 @@
 Attribute VB_Name = "Z_Functions"
 Function FormulaConcat(rng As Range, Optional round_num As Integer = -2, Optional include_equal_sign = False) As Variant
-'Kinen Ma, 2023-12-22, Version 1.0
+
+'Kinen Ma, 2023-12-22, Version 2.0
 '
 'More reliable than FormulaValue
 'cross referened to other spreadsheet or excel does not work yet
@@ -171,7 +172,7 @@ Private Function Helper_FormulaConcat_RoundNum(cell_address, round_num) As Varia
     If round_num = -1 Then
         Helper_FormulaConcat_RoundNum = cell_address
     ElseIf round_num = -2 Then
-        If d < 2 Then
+        If d < 10 Then
             Helper_FormulaConcat_RoundNum = "Round(" + cell_address + ",2)"
         ElseIf d < 100 Then
             Helper_FormulaConcat_RoundNum = "Round(" + cell_address + ",1)"
@@ -215,3 +216,28 @@ Sub FormulaConcat_to_CellFormula()
     End With
     
 End Sub
+
+
+Function GetAllSheetNames() As Variant
+    Dim ws As Worksheet
+    Dim sheetNames As String
+    Dim sheetArray() As String
+
+    ' Collect all sheet names into a single string separated by commas
+    For Each ws In Worksheets
+        sheetNames = sheetNames & ws.Name & "?"
+    Next ws
+
+    ' Remove the trailing comma
+    sheetNames = left(sheetNames, Len(sheetNames) - 1)
+
+    ' Split the string into an array
+    sheetArray = Split(sheetNames, "?")
+
+    ' Return the array to spill into cells
+    GetAllSheetNames = Application.Transpose(sheetArray)
+End Function
+
+
+
+

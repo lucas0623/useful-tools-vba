@@ -16,56 +16,6 @@ Attribute VB_Name = "F_CopyDefinedNames"
 '    Set name2 = ActiveSheet.Names.Add("ZZZ", "AAA")
 '    tempName.Delete
 'End Sub
-Sub TestDelNames()
-    Dim xName As Name
-    Dim ws As Worksheet
-    
-    ' Loop through each worksheet in the active workbook
-    For Each ws In ActiveWorkbook.Worksheets
-        Set xName = GetNameObjByString("_Table1_Out", ws)
-        If Not xName Is Nothing Then
-            Debug.Print xName.Name & " is deleted"
-            xName.Delete
-        End If
-        
-        Set xName = GetNameObjByString("_Table1_In1", ws)
-        If Not xName Is Nothing Then
-            Debug.Print xName.Name & " is deleted"
-            xName.Delete
-        End If
-        
-        Set xName = GetNameObjByString("_Table2_In1", ws)
-        If Not xName Is Nothing Then
-            Debug.Print xName.Name & " is deleted"
-            xName.Delete
-        End If
-        
-        Set xName = GetNameObjByString("_Table2_Out", ws)
-        If Not xName Is Nothing Then
-            Debug.Print xName.Name & " is deleted"
-            xName.Delete
-        End If
-        
-        Set xName = GetNameObjByString("__123Graph_A", ws)
-        If Not xName Is Nothing Then
-            Debug.Print xName.Name & " is deleted"
-            xName.Delete
-        End If
-        
-        Set xName = GetNameObjByString("__123Graph_X", ws)
-        If Not xName Is Nothing Then
-            Debug.Print xName.Name & " is deleted"
-            xName.Delete
-        End If
-        
-        Set xName = GetNameObjByString("_FilterDatabase", ws)
-        If Not xName Is Nothing Then
-            Debug.Print xName.Name & " is deleted"
-            xName.Delete
-        End If
-    Next ws
-    
-End Sub
 Sub WriteDefinedNamesToCell()
     Dim oWS As Worksheet, refRng As Range
     Dim rRow As Long, rCol As Long
@@ -164,17 +114,17 @@ Sub ChangeDefinedNamesScopeLocalToGlobal()
         newRefersTo = cName.RefersTo
         newComment = cName.Comment
         
-        Set tempName = oWB.names.Add(tempNameStr, newRefersTo)
+        Set tempName = oWB.Names.Add(tempNameStr, newRefersTo)
         UpdateChartSeriesReference oWS, oldNameStr, tempNameStrFull
 
         cName.Delete
-        Set newName = oWB.names.Add(newNameStr, newRefersTo)
+        Set newName = oWB.Names.Add(newNameStr, newRefersTo)
         newName.Comment = newComment
         UpdateChartSeriesReference oWS, tempNameStrFull, newNameStrFull
         
         
         'Find all names that refers to the name and change their formula
-        For Each x In oWB.names
+        For Each x In oWB.Names
             If Not InStr(1, x.RefersTo, oldNameStr) = 0 Then
                 x.RefersTo = Replace(x.RefersTo, oldNameStr, newNameStrFull)
             End If
@@ -229,16 +179,16 @@ Sub ChangeDefinedNamesScopeGlobalToLocal()
         newRefersTo = cName.RefersTo
         newComment = cName.Comment
         
-        Set tempName = oWS.names.Add(newNameStr & "_", newRefersTo)
+        Set tempName = oWS.Names.Add(newNameStr & "_", newRefersTo)
         UpdateChartSeriesReference oWS, oldNameStr, tempNameStr
         
         cName.Delete
-        Set newName = oWS.names.Add(newNameStr, newRefersTo)
+        Set newName = oWS.Names.Add(newNameStr, newRefersTo)
         newName.Comment = newComment
         UpdateChartSeriesReference oWS, tempNameStr, newNameStr
         
         'Find all names that refers to the name and change their formula
-        For Each x In oWB.names
+        For Each x In oWB.Names
             If Not InStr(1, x.RefersTo, oldNameStr) = 0 Then
 '                Do Until InStr(1, x.RefersTo, oldNameStr) = 0
 '                    x.RefersTo = Replace(x.RefersTo, oWS.Name & "!", oWB.Name & "!")
@@ -289,14 +239,14 @@ Private Function GetAllNamesInSheet(obj As Object) As String()
     Dim nameList As New Collection
     Dim x As Name
     If TypeOf obj Is Worksheet Then
-        For Each x In obj.names
+        For Each x In obj.Names
             If InStr(1, x.Name, obj.Name) > 0 Then
                 'Debug.Print Split(x.name, "!")(1)
                 nameList.Add Split(x.Name, "!")(1)
             End If
         Next x
     ElseIf TypeOf obj Is Workbook Then
-        For Each x In obj.names
+        For Each x In obj.Names
             If InStr(1, x.Name, ".") = 0 And InStr(1, x.Name, "!") = 0 Then
                 'Debug.Print Split(x.name, "!")(1)
                 nameList.Add x.Name
@@ -313,7 +263,7 @@ Private Function GetNameObjByString(str As String, obj As Object) As Name
     Dim retName As Name
     Dim x As Name
     If TypeOf obj Is Worksheet Then
-        For Each x In obj.names
+        For Each x In obj.Names
             If InStr(1, x.Name, obj.Name) > 0 Then
                 'Debug.Print Split(x.name, "!")(1)
                 If InStr(1, x.Name, str) > 0 Then
@@ -323,7 +273,7 @@ Private Function GetNameObjByString(str As String, obj As Object) As Name
             End If
         Next x
     ElseIf TypeOf obj Is Workbook Then
-        For Each x In obj.names
+        For Each x In obj.Names
             If x.Name = str Then
                 Set retName = x
                 Exit For
@@ -434,7 +384,7 @@ Private Sub PasteNameToSheet(oName As Name, targetSheet As Object, nameList() As
     Do Until InStr(1, newRefersTo, "'" & oName.Parent.Name & "'!") = 0
         newRefersTo = Replace(newRefersTo, "'" & oName.Parent.Name & "'!", "'" & targetSheet.Name & "'!")
     Loop
-    Set newName = targetSheet.names.Add(Name:=newNameStr, RefersTo:=newRefersTo)
+    Set newName = targetSheet.Names.Add(Name:=newNameStr, RefersTo:=newRefersTo)
     newName.Comment = oName.Comment
     
     'check if the name refers to another defined name. If yes, paste that name once more
