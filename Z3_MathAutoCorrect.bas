@@ -121,10 +121,10 @@ Sub AutoCorrectMathSymbols()
     corrections.Add "\vdots", ChrW(&H22EE)         ' ? (Vertical ellipsis)
     corrections.Add "\cdots", ChrW(&H22EF)         ' ? (Center ellipsis)
     corrections.Add "\ldots", ChrW(&H2026)         ' … (Horizontal ellipsis)
-    corrections.Add "<=", ChrW(&H2264)             ' = (Less than or equal to)
-    corrections.Add ">=", ChrW(&H2265)             ' = (Greater than or equal to)
-    corrections.Add "==", ChrW(&H2261)             ' = (Identical to)
-    corrections.Add "!=", ChrW(&H2260)             ' ? (Not equal to)
+    corrections.Add "\<=", ChrW(&H2264)             ' = (Less than or equal to)
+    corrections.Add "\>=", ChrW(&H2265)             ' = (Greater than or equal to)
+    corrections.Add "\==", ChrW(&H2261)             ' = (Identical to)
+    corrections.Add "\!=", ChrW(&H2260)             ' ? (Not equal to)
     corrections.Add "\plusminus", ChrW(&HB1)       ' ± (Plus-minus sign)
     corrections.Add "\minus", ChrW(&H2212)         ' - (Minus sign)
     corrections.Add "\cdot", ChrW(&H22C5)          ' · (Dot operator)
@@ -168,6 +168,32 @@ Sub AutoCorrectMathSymbols()
     corrections.Add "\Re", ChrW(&H211C)            ' R (Real part of complex number)
     corrections.Add "\Im", ChrW(&H2111)            ' I (Imaginary part of complex number)
     corrections.Add "\wp", ChrW(&H2118)            ' P (Weierstrass p function)
+
+    ' Superscript numbers
+    corrections.Add "\^0", ChrW(&H2070)            ' ° (Superscript Zero)
+    corrections.Add "\^1", ChrW(&HB9)              ' ¹ (Superscript One)
+    corrections.Add "\^2", ChrW(&HB2)              ' ² (Superscript Two)
+    corrections.Add "\^3", ChrW(&HB3)              ' ³ (Superscript Three)
+    corrections.Add "\^4", ChrW(&H2074)            ' 4 (Superscript Four)
+    corrections.Add "\^5", ChrW(&H2075)            ' 5 (Superscript Five)
+    corrections.Add "\^6", ChrW(&H2076)            ' 6 (Superscript Six)
+    corrections.Add "\^7", ChrW(&H2077)            ' 7 (Superscript Seven)
+    corrections.Add "\^8", ChrW(&H2078)            ' 8 (Superscript Eight)
+    corrections.Add "\^9", ChrW(&H2079)            ' ? (Superscript Nine)
+    
+    ' Subscript numbers
+    corrections.Add "\~^0", ChrW(&H2080)            ' 0 (Subscript Zero)
+    corrections.Add "\~^1", ChrW(&H2081)            ' 1 (Subscript One)
+    corrections.Add "\~^2", ChrW(&H2082)            ' 2 (Subscript Two)
+    corrections.Add "\~^3", ChrW(&H2083)            ' 3 (Subscript Three)
+    corrections.Add "\~^4", ChrW(&H2084)            ' 4 (Subscript Four)
+    corrections.Add "\~^5", ChrW(&H2085)            ' 5 (Subscript Five)
+    corrections.Add "\~^6", ChrW(&H2086)            ' 6 (Subscript Six)
+    corrections.Add "\~^7", ChrW(&H2087)            ' 7 (Subscript Seven)
+    corrections.Add "\~^8", ChrW(&H2088)            ' 8 (Subscript Eight)
+    corrections.Add "\~^9", ChrW(&H2089)            ' 9 (Subscript Nine)
+
+
 
 
     ' Loop through each cell in the selection
