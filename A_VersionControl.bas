@@ -1,7 +1,11 @@
 Attribute VB_Name = "A_VersionControl"
 Sub ShowVersion()
 
-    MsgBox "Version 1.3.0 (07 Nov 2024)" & Chr(10) & "Arthor: Lucas LEUNG & Kinen MA"
+    MsgBox "Stable Version 1.3.1 (19 Nov 2024)" & Chr(10) & _
+    "https://github.com/lucas0623/Useful-Tools-VBA-Modules/tree/main" & Chr(10) & _
+    "GITHUB MAIN Branch Commit: 180963c4c0c3e10cdfdcc45263aafd2b7d31a8c2" & Chr(10) & _
+    Chr(10) & _
+    "Arthor: Lucas LEUNG & Kinen MA"
 End Sub
 
 Sub Help()

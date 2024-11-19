@@ -64,7 +64,9 @@ Public Sub ProcessRibbon_UsefulTools(Control As IRibbonControl)
             Z2_ChangeSheetVisibility.ManageSheetVisibilityInteractive
         Case "btn_MathAutoCorrect"
             Z3_MathAutoCorrect.AutoCorrectMathSymbols
-            
+        Case "btn_TransposeCellFormula"
+            Z4_TransposeCellFormula.TransposeCellFormula
+        
 '        Case "btn_CalSoilLoad"
 '            F_CalSoilLoad.CalSoilLoad
 '        Case "btn_ABS"
