@@ -1,81 +1,110 @@
 Attribute VB_Name = "UpdateChartSeries"
-'@Folder("VBAProject")
 Sub UpdateChartsToCurrentWorksheet()
-    Dim ws As Worksheet
+    Dim activeWs As Worksheet
+    Dim targetWs As Worksheet
     Dim chartObj As ChartObject
     Dim chrt As Chart
     Dim ser As Series
-    Dim seriesInfo As Collection
-    Dim serName As String
-    Dim serXValues As String
-    Dim serYValues As String
-    Dim seriesData As Variant
-    Dim serFormula As String
-    Dim serFormulaPrefix As String, serFormulaSuffix As String
-    Dim isChartFound As Boolean
-    Set ws = ActiveSheet
-    Set seriesInfo = New Collection
-    
-    ' Loop through all charts in the current worksheet
-    For Each chartObj In ws.ChartObjects
-        Set chrt = chartObj.Chart
-        If chrt Is Nothing Then GoTo ExitSub
-        isChartFound = True
-        ' Save chart details
-        Debug.Print "Chart Name: " & chartObj.Name
-        
-        ' Loop through all series in the chart
-        For Each ser In chrt.SeriesCollection
-            serName = ser.Name
-            serFormulaPrefix = Split(ser.formula, ",")(0)
-            serXValues = Split(ser.formula, ",")(1)
-            serYValues = Split(ser.formula, ",")(2)
-            serFormulaSuffix = Split(ser.formula, ",")(3)
-            
-            
-            ' Print series details to Immediate Window
-            Debug.Print "Series Name: " & serName
-            Debug.Print "Series X Values: " & serXValues
-            Debug.Print "Series Y Values: " & serYValues
-            Debug.Print "Is referrencing current sheet: " & IsReferringToCurrentSheet(serXValues)
-            Debug.Print "Converted to: " & ConvertToCurrentSheetReference(serXValues)
-            
-            ' Save series details into a collection as a 1-based array
-            seriesData = Array(serName, serXValues, serYValues)
-            seriesInfo.Add seriesData
-            
-            'Reassign the formula
-            serFormula = serFormulaPrefix & "," _
-                        & ConvertToCurrentSheetReference(serXValues) & "," _
-                        & ConvertToCurrentSheetReference(serYValues) & "," _
-                        & serFormulaSuffix
-            ser.formula = serFormula
-            
-        Next ser
-        
-        ' Delete all series in the chart
-'        For Each ser In chrt.SeriesCollection
-'            ser.Formula = ""
-'            ser.Formula = serFormula
-'        Next ser
-        
-'        ' Re-add series to the chart
-'        For Each seriesData In seriesInfo
-'            With chrt.SeriesCollection.NewSeries
-'                .Name = seriesData(0)
-'                .Formula = seriesData(2)
-'            End With
-'        Next seriesData
-        
-        ' Clear seriesInfo after processing each chart
-        Set seriesInfo = New Collection
-    Next chartObj
-    If Not isChartFound Then GoTo ExitSub
+    Dim serFormulaParts() As String
+    Dim sheetName As String
+    Dim isChartSelected As Boolean
+    Dim userChoice As VbMsgBoxResult
+
+    ' Set the currently active worksheet
+    Set activeWs = ActiveSheet
+
+    ' Ask user to choose whether to update all charts or only the selected one
+    userChoice = MsgBox("Do you want to update all charts?" & vbCrLf & "Click 'Yes' to update ALL chart in this sheet" & vbCrLf & "Click 'No' to update only the selected chart (only support selecting a single chart).", vbYesNo + vbQuestion, "Update Charts")
+
+    ' Prompt user for the sheet name to reference
+    sheetName = inputBox("Enter the name of the worksheet to reference in the chart, enter nothing will default to the active sheet:")
+
+    ' Check if the user entered a sheet name
+    If sheetName = "" Then
+        ' Default to the active sheet name
+        sheetName = activeWs.Name
+        MsgBox "No sheet name entered. Defaulting to the active sheet: " & sheetName
+    End If
+
+    ' Check if the target sheet exists
+    On Error Resume Next
+    Set targetWs = Worksheets(sheetName)
+    On Error GoTo 0
+
+    If targetWs Is Nothing Then
+        MsgBox "The specified worksheet does not exist. Please try again."
+        Exit Sub
+    End If
+
+    ' Check if a chart is selected
+    On Error Resume Next
+    Set chrt = ActiveChart
+    On Error GoTo 0
+
+    isChartSelected = Not chrt Is Nothing
+
+    ' Update charts based on user selection
+    If userChoice = vbYes Then
+        ' Update all charts in the active worksheet
+        For Each chartObj In activeWs.ChartObjects
+            Set chrt = chartObj.Chart
+            If Not chrt Is Nothing Then
+                Call UpdateChartSeries(chrt, sheetName)
+            End If
+        Next chartObj
+    Else
+        ' Update only the selected chart
+        If isChartSelected Then
+            Call UpdateChartSeries(chrt, sheetName)
+        Else
+            MsgBox "No chart is selected. Please select a chart or choose to update all charts."
+        End If
+    End If
+
     MsgBox "Operation Completed."
-    Exit Sub
-ExitSub:
-    MsgBox "No Chart is found in the current worksheet."
 End Sub
+
+Sub UpdateChartSeries(chrt As Chart, sheetName As String)
+    Dim ser As Series
+    Dim serFormulaParts() As String
+
+    ' Loop through all series in the chart
+    For Each ser In chrt.SeriesCollection
+        serFormulaParts = Split(ser.formula, ",")
+
+        ' Ensure the array has the expected number of elements
+        If UBound(serFormulaParts) >= 2 Then
+            ' Update the series formula to reference the specified sheet
+            serFormulaParts(1) = ReplaceSheetNameInReference(serFormulaParts(1), sheetName)
+            serFormulaParts(2) = ReplaceSheetNameInReference(serFormulaParts(2), sheetName)
+
+            ' Attempt to reassemble the formula with error handling
+            On Error Resume Next
+            ser.formula = Join(serFormulaParts, ",")
+            If Err.Number <> 0 Then
+                Debug.Print "Error updating series formula for chart: " & chrt.Name & " with series: " & ser.Name
+                Err.Clear
+            End If
+            On Error GoTo 0
+        Else
+            Debug.Print "Unexpected formula structure: " & ser.formula
+        End If
+    Next ser
+End Sub
+
+Function ReplaceSheetNameInReference(reference As String, sheetName As String) As String
+    Dim refParts() As String
+    refParts = Split(reference, "!")
+    If UBound(refParts) > 0 Then
+        ' Replace the sheet name part of the reference
+        ReplaceSheetNameInReference = "'" & sheetName & "'!" & refParts(1)
+    Else
+        ' If reference does not have a sheet name, just prefix it
+        ReplaceSheetNameInReference = "'" & sheetName & "'!" & reference
+    End If
+End Function
+
+
 Sub UpdateChartPlottingExtent()
     Dim ws As Worksheet
     Dim chartObj As ChartObject
