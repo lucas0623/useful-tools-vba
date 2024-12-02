@@ -32,7 +32,7 @@ Sub AddBorder_Hori()
     Application.ScreenUpdating = False
     
     colNum = colRef.Column
-    For Each myRow In Selection.Rows
+    For Each myRow In Selection.rows
         
         If count > 0 Then
             
@@ -45,19 +45,19 @@ Sub AddBorder_Hori()
             If str_currentRow <> str_lastRow Then
                 
                 If lineType = 1 Then
-                    With Rows(num_lastRow).Borders(xlEdgeBottom)
+                    With rows(num_lastRow).borders(xlEdgeBottom)
                         .LineStyle = xlContinuous
                         .Weight = xlThin
                         .ColorIndex = 1
                     End With
                 ElseIf lineType = 2 Then
-                    With Rows(num_lastRow).Borders(xlEdgeBottom)
+                    With rows(num_lastRow).borders(xlEdgeBottom)
                         .LineStyle = xlContinuous
                         .Weight = xlMedium
                         .ColorIndex = 1
                     End With
                 ElseIf lineType = 3 Then
-                    With Rows(num_lastRow).Borders(xlEdgeBottom)
+                    With rows(num_lastRow).borders(xlEdgeBottom)
                         .LineStyle = xlDouble
                         .Weight = xlThick
                         .ColorIndex = 1
@@ -121,9 +121,9 @@ Sub BoldMaxOfSameGroup()
                 row_maxValue = j
             End If
         Next j
-        Rows(row_maxValue).Font.Bold = True
+        rows(row_maxValue).Font.Bold = True
 
-        i = j
+        i = j - 1
     Next i
 
 End Sub
@@ -133,9 +133,9 @@ Sub ClearBorder_Hori()
     Application.ScreenUpdating = False
     Dim myRow As Range
     
-    For Each myRow In Selection.Rows
+    For Each myRow In Selection.rows
     
-        With myRow.Borders(xlEdgeBottom)
+        With myRow.borders(xlEdgeBottom)
             .LineStyle = xlLineStyleNone
         End With
     Next
@@ -150,7 +150,7 @@ Sub ClearBorder_Right()
     
     For Each myCol In Selection.Columns
     
-        With myCol.Borders(xlEdgeRight)
+        With myCol.borders(xlEdgeRight)
             .LineStyle = xlLineStyleNone
         End With
     Next
@@ -227,7 +227,7 @@ Sub MergeCellsInSameGroup()
     count = 0
     
     fRow = Selection.row
-    lRow = Selection.row + Selection.Rows.count - 1
+    lRow = Selection.row + Selection.rows.count - 1
     
     For i = fRow To lRow
         lRowOfSameGrp = LastRowOfSameGrp(i, fCol, lRow)
