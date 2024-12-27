@@ -1,5 +1,5 @@
 Attribute VB_Name = "Z_Functions"
-Function FormulaConcat(rng As Range, Optional round_num As Integer = -2, Optional include_equal_sign = False) As Variant
+Function FormulaConcat(rng As Range, Optional round_num As Integer = -2, Optional include_equal_sign = True) As Variant
 
 'Kinen Ma, 2023-12-22, Version 2.0
 '
@@ -219,6 +219,9 @@ End Sub
 
 
 Function GetAllSheetNames() As Variant
+
+    'Kinen Ma, Year 2024, Version 1.0
+
     Dim ws As Worksheet
     Dim sheetNames As String
     Dim sheetArray() As String
@@ -238,6 +241,40 @@ Function GetAllSheetNames() As Variant
     GetAllSheetNames = Application.Transpose(sheetArray)
 End Function
 
+
+Function Strip(text As String, Optional chars As String = " ") As String
+
+    'Kinen Ma, 2024-11-18, Version 1.0
+    'Similar to Python Strip() function
+
+    Dim startPos As Long
+    Dim endPos As Long
+    
+    ' If chars is empty, return the original text
+    If Len(chars) = 0 Then
+        Strip = text
+        Exit Function
+    End If
+    
+    ' Find the first character not in the strip set
+    startPos = 1
+    Do While startPos <= Len(text) And InStr(chars, Mid(text, startPos, 1)) > 0
+        startPos = startPos + 1
+    Loop
+    
+    ' Find the last character not in the strip set
+    endPos = Len(text)
+    Do While endPos >= startPos And InStr(chars, Mid(text, endPos, 1)) > 0
+        endPos = endPos - 1
+    Loop
+    
+    ' Return the trimmed string
+    If startPos <= endPos Then
+        Strip = Mid(text, startPos, endPos - startPos + 1)
+    Else
+        Strip = ""
+    End If
+End Function
 
 
 
