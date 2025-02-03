@@ -45,19 +45,19 @@ Sub AddBorder_Hori()
             If str_currentRow <> str_lastRow Then
                 
                 If lineType = 1 Then
-                    With rows(num_lastRow).borders(xlEdgeBottom)
+                    With rows(num_lastRow).Borders(xlEdgeBottom)
                         .LineStyle = xlContinuous
                         .Weight = xlThin
                         .ColorIndex = 1
                     End With
                 ElseIf lineType = 2 Then
-                    With rows(num_lastRow).borders(xlEdgeBottom)
+                    With rows(num_lastRow).Borders(xlEdgeBottom)
                         .LineStyle = xlContinuous
                         .Weight = xlMedium
                         .ColorIndex = 1
                     End With
                 ElseIf lineType = 3 Then
-                    With rows(num_lastRow).borders(xlEdgeBottom)
+                    With rows(num_lastRow).Borders(xlEdgeBottom)
                         .LineStyle = xlDouble
                         .Weight = xlThick
                         .ColorIndex = 1
@@ -123,7 +123,7 @@ Sub BoldMaxOfSameGroup()
         Next j
         rows(row_maxValue).Font.Bold = True
 
-        i = j - 1
+        i = j
     Next i
 
 End Sub
@@ -135,7 +135,7 @@ Sub ClearBorder_Hori()
     
     For Each myRow In Selection.rows
     
-        With myRow.borders(xlEdgeBottom)
+        With myRow.Borders(xlEdgeBottom)
             .LineStyle = xlLineStyleNone
         End With
     Next
@@ -150,7 +150,7 @@ Sub ClearBorder_Right()
     
     For Each myCol In Selection.Columns
     
-        With myCol.borders(xlEdgeRight)
+        With myCol.Borders(xlEdgeRight)
             .LineStyle = xlLineStyleNone
         End With
     Next
@@ -216,49 +216,37 @@ Sub MergeCellsInSameGroup()
     Dim fCol As Long, lCol As Long
     Dim fRow As Long, lRow As Long
     Dim i As Long, j As Long
-    
+    Dim currentValue As Variant
+    Dim startRow As Long
+
     Application.Calculation = xlCalculationManual
     Application.ScreenUpdating = False
     Application.DisplayAlerts = False
 
     fCol = Selection.Column
     lCol = Selection.Column + Selection.Columns.count - 1
-    'colNum2 = colRef2.Column
-    count = 0
-    
+
     fRow = Selection.row
     lRow = Selection.row + Selection.rows.count - 1
-    
-    For i = fRow To lRow
-        lRowOfSameGrp = LastRowOfSameGrp(i, fCol, lRow)
-        For j = fCol To lCol
-            Range(Cells(i, j), Cells(lRowOfSameGrp, j)).Merge
-        Next j
-        i = lRowOfSameGrp
-    Next i
-    Application.ScreenUpdating = True
-    Application.Calculation = xlAutomatic
-    Application.DisplayAlerts = True
 
+    For j = fCol To lCol
+        currentValue = Cells(fRow, j).Value
+        If Not IsEmpty(currentValue) Then startRow = fRow
+        For i = fRow + 1 To lRow + 1  ' Go one row beyond the last to ensure final merge
+            If Cells(i, j).Value <> currentValue Or i > lRow Then
+                If Not IsEmpty(currentValue) And i - 1 > startRow Then
+                    Range(Cells(startRow, j), Cells(i - 1, j)).Merge
+                End If
+                currentValue = Cells(i, j).Value
+                If Not IsEmpty(currentValue) Then startRow = i
+            End If
+        Next i
+    Next j
+
+    Application.DisplayAlerts = True
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
 End Sub
-Private Function LastRowOfSameGrp(ByVal fRow As Long, ByVal rCol As Long, Optional lRow As Long, Optional ws As Worksheet) As Long
-    Dim cRow As Long
-    
-    If lRow = 0 Then lRow = 1048576
-    If ws Is Nothing Then Set ws = ActiveSheet
-    If lRow < fRow Then
-        LastRowOfSameGrp = 0
-        Exit Function
-    End If
-    cRow = fRow
-'find lRow_SchSameGrp
-    With ws
-        Do Until (Not .Cells(fRow, rCol).text = .Cells(cRow, rCol).text And Not .Cells(cRow, rCol) = vbNullString) Or cRow > lRow
-            cRow = cRow + 1
-        Loop
-        LastRowOfSameGrp = cRow - 1
-    End With
-End Function
 
 Private Function AddInputBox_rng(prompt As String, Optional title As String, Optional default As Range) As Range
     If default Is Nothing Then
