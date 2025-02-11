@@ -302,6 +302,43 @@ End Sub
 'End Function
 
 
+Sub UnmergeCellsAndDistribute()
+    Dim cell As Range
+    Dim mergedArea As Range
+    Dim processedAreas As Collection
+    Dim cellValue As Variant
+    Dim areaAddress As String
+    
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    Application.Calculation = xlCalculationManual
+    
+    Set processedAreas = New Collection
+    
+    For Each cell In Selection
+        If cell.MergeCells Then
+            Set mergedArea = cell.MergeArea
+            areaAddress = mergedArea.Address(False, False)
+            
+            ' Check if we've already processed this area
+            On Error Resume Next
+            processedAreas.Add mergedArea, areaAddress
+            If Err.Number = 0 Then
+                ' Process new merged area
+                cellValue = mergedArea.Cells(1, 1).Value
+                mergedArea.UnMerge
+                mergedArea.Value = cellValue
+            End If
+            On Error GoTo 0
+        End If
+    Next cell
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.DisplayAlerts = True
+    Application.ScreenUpdating = True
+End Sub
+
+
 Private Function AddInputBox_rng(prompt As String, Optional title As String, Optional default As Range) As Range
     If default Is Nothing Then
         Set default = Range("D1")
