@@ -11,8 +11,12 @@ Public Sub ProcessRibbon_UsefulTools(Control As IRibbonControl)
             B_FormatTable.ClearBorder_Right
         Case "btn_BoldMax"
             B_FormatTable.BoldMaxOfSameGroup
+        Case "btn_MergeSameIdentityBasedOnFirstColumn"
+            B_FormatTable.MergeCellsInSameGroup_bycolumn
         Case "btn_MergeSameIdentity"
             B_FormatTable.MergeCellsInSameGroup
+        Case "btn_UnmergeAndFullyPopulate"
+            B_FormatTable.UnmergeCellsAndDistribute
             
         Case "btn_AddBotBorderAtPageBreak"
             AddThickBottomLineAtPageBreak

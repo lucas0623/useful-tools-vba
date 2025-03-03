@@ -250,56 +250,56 @@ Sub MergeCellsInSameGroup()
 End Sub
 
 'LOGIC: Merge rows with same identity in 1st column
-'Sub MergeCellsInSameGroup()
-'    Dim fCol As Long, lCol As Long
-'    Dim fRow As Long, lRow As Long
-'    Dim i As Long, j As Long
-'
-'    Application.Calculation = xlCalculationManual
-'    Application.ScreenUpdating = False
-'    Application.DisplayAlerts = False
-'
-'    fCol = Selection.Column
-'    lCol = Selection.Column + Selection.Columns.count - 1
-'    'colNum2 = colRef2.Column
-'    count = 0
-'
-'    fRow = Selection.row
-'    lRow = Selection.row + Selection.rows.count - 1
-'
-'    For i = fRow To lRow
-'        lRowOfSameGrp = LastRowOfSameGrp(i, fCol, lRow)
-'    For j = fCol To lCol
-'            Range(Cells(i, j), Cells(lRowOfSameGrp, j)).Merge
-'        Next j
-'        i = lRowOfSameGrp
-'
-'        Next i
-'    Application.ScreenUpdating = True
-'    Application.Calculation = xlAutomatic
-'    Application.DisplayAlerts = True
-'
-'End Sub
-'
-'
-'Private Function LastRowOfSameGrp(ByVal fRow As Long, ByVal rCol As Long, Optional lRow As Long, Optional ws As Worksheet) As Long
-'    Dim cRow As Long
-'
-'    If lRow = 0 Then lRow = 1048576
-'    If ws Is Nothing Then Set ws = ActiveSheet
-'    If lRow < fRow Then
-'        LastRowOfSameGrp = 0
-'        Exit Function
-'    End If
-'    cRow = fRow
-''find lRow_SchSameGrp
-'    With ws
-'        Do Until (Not .Cells(fRow, rCol).text = .Cells(cRow, rCol).text And Not .Cells(cRow, rCol) = vbNullString) Or cRow > lRow
-'            cRow = cRow + 1
-'        Loop
-'        LastRowOfSameGrp = cRow - 1
-'    End With
-'End Function
+Sub MergeCellsInSameGroup_bycolumn()
+    Dim fCol As Long, lCol As Long
+    Dim fRow As Long, lRow As Long
+    Dim i As Long, j As Long
+
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+
+    fCol = Selection.Column
+    lCol = Selection.Column + Selection.Columns.count - 1
+    'colNum2 = colRef2.Column
+    count = 0
+
+    fRow = Selection.row
+    lRow = Selection.row + Selection.rows.count - 1
+
+    For i = fRow To lRow
+        lRowOfSameGrp = LastRowOfSameGrp(i, fCol, lRow)
+    For j = fCol To lCol
+            Range(Cells(i, j), Cells(lRowOfSameGrp, j)).Merge
+        Next j
+        i = lRowOfSameGrp
+
+        Next i
+    Application.ScreenUpdating = True
+    Application.Calculation = xlAutomatic
+    Application.DisplayAlerts = True
+
+End Sub
+
+
+Private Function LastRowOfSameGrp(ByVal fRow As Long, ByVal rCol As Long, Optional lRow As Long, Optional ws As Worksheet) As Long
+    Dim cRow As Long
+
+    If lRow = 0 Then lRow = 1048576
+    If ws Is Nothing Then Set ws = ActiveSheet
+    If lRow < fRow Then
+        LastRowOfSameGrp = 0
+        Exit Function
+    End If
+    cRow = fRow
+'find lRow_SchSameGrp
+    With ws
+        Do Until (Not .Cells(fRow, rCol).text = .Cells(cRow, rCol).text And Not .Cells(cRow, rCol) = vbNullString) Or cRow > lRow
+            cRow = cRow + 1
+        Loop
+        LastRowOfSameGrp = cRow - 1
+    End With
+End Function
 
 
 Sub UnmergeCellsAndDistribute()
