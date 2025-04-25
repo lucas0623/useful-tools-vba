@@ -1,5 +1,9 @@
 Attribute VB_Name = "Z4_TransposeCellFormula"
 Sub TransposeCellFormula()
+
+    'Kinen Ma 2024-11-19
+    'Initial setup of function
+
     Dim rng As Range
     Dim transposedFormulas As Variant
     Dim formulas As Variant

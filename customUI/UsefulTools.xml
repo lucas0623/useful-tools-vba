@@ -8,7 +8,12 @@
 			<button id = "btn_AddBotBorder" label = "Add Bottom Borders in Same Group" imageMso = "BorderBottom" onAction = "ProcessRibbon_UsefulTools"/>
 			<button id = "btn_ClrBotBorder" label = "Clear Bottom Border in Selection" imageMso = "Delete" onAction ="ProcessRibbon_UsefulTools"/>
 			<button id = "btn_ClrRightBorder" label = "Clear Right Border  in Selection" imageMso = "Delete" onAction ="ProcessRibbon_UsefulTools"/>
-			<button id = "btn_MergeSameIdentity" label =  "Merge Cells With Same Identity in Column" imageMso = "MergeCells" onAction="ProcessRibbon_UsefulTools"/>
+			<button id = "btn_MergeSameIdentityBasedOnFirstColumn" label =  "Merge Cells 1" imageMso = "MergeCells" onAction="ProcessRibbon_UsefulTools"
+			supertip = "Merge cells with same identity in columns based on the first column as each group."/>
+			<button id = "btn_MergeSameIdentity" label =  "Merge Cells 2" imageMso = "MergeCells" onAction="ProcessRibbon_UsefulTools"
+			supertip = "Merge cells with same identity in columns."/>
+			<button id = "btn_UnmergeAndFullyPopulate" label =  "Unmerge Cells" imageMso = "UnmergeCells" onAction="ProcessRibbon_UsefulTools"
+			supertip = "Unmerge and fully populate cells."/>
 	</group>
 
 	<group id = "group2" label = "Formatting Page">
