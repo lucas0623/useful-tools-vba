@@ -35,7 +35,7 @@ Sub WriteDefinedNamesToCell()
     If refRng Is Nothing Then Exit Sub
     rRow = refRng.row
     rCol = refRng.Column
-    Dim i As Long, cName As Name, targetWS As Worksheet
+    Dim i As Long, cName As name, targetWS As Worksheet
     
     For i = 0 To UBound(selectedNames)
         'Debug.Print selectedNames(i)
@@ -51,32 +51,74 @@ Sub CopyDefinedNamesToSheet()
     Dim WBs() As String, selectedWB As String
     Dim WSs() As String, selcetedWS() As String
     
+    ' Set the source worksheet to the active sheet
     Set oWS = ActiveSheet
+    
+    ' Get all defined names in the active sheet
     nameList = GetAllNamesInSheet(oWS)
     If Not isInitialised(nameList) Then
         MsgBox "No Defined Name is found in the Active Sheet"
         Exit Sub
     End If
     
+    ' Let user select which names to copy
     selectedNames = UFShowArrInList(nameList, "Select Defined Names")
     If Not isInitialised(selectedNames) Then Exit Sub
     
+    ' Let user select the target workbook
     WBs = GetAllOpenedWBNames
     selectedWB = UFShowComboBox(WBs)
     If selectedWB = vbNullString Then Exit Sub
     
-    WSs = GetAllSheetsNamesInWB(Workbooks(selectedWB))
-    selcetedWS = UFShowArrInList(WSs, "Select Target Worksheet", False)
-    If selcetedWS(0) = vbNullString Then Exit Sub
+    ' Prompt user to choose between specific sheet or global scope
+    Dim copyOption As VbMsgBoxResult
+    copyOption = MsgBox("Do you want to copy the defined names to a specific sheet or to the global scope?" & vbCrLf & _
+                        "Click Yes for specific sheet, No for global scope, Cancel to abort.", vbYesNoCancel)
+    If copyOption = vbCancel Then Exit Sub
     
-    Dim i As Long, cName As Name, targetWS As Worksheet
-    Set targetWS = Workbooks(selectedWB).Worksheets(selcetedWS(0))
-    For i = 0 To UBound(selectedNames)
-        'Debug.Print selectedNames(i)
-        Set cName = GetNameObjByString(selectedNames(i), oWS)
-        PasteNameToSheet cName, targetWS, nameList
+    Dim i As Long, cName As name, targetWS As Worksheet, targetWB As Workbook
+    Set targetWB = Workbooks(selectedWB)
+    
+    If copyOption = vbYes Then
+        ' Option 1: Copy to a specific sheet
+        WSs = GetAllSheetsNamesInWB(targetWB)
+        selcetedWS = UFShowArrInList(WSs, "Select Target Worksheet", False)
+        If selcetedWS(0) = vbNullString Then Exit Sub
+        Set targetWS = targetWB.Worksheets(selcetedWS(0))
         
-    Next i
+        ' Copy each selected name to the target sheet
+        For i = 0 To UBound(selectedNames)
+            Set cName = GetNameObjByString(selectedNames(i), oWS)
+            PasteNameToSheet cName, targetWS, nameList
+        Next i
+    ElseIf copyOption = vbNo Then
+        ' Option 2: Copy to global scope
+        For i = 0 To UBound(selectedNames)
+            Set cName = GetNameObjByString(selectedNames(i), oWS)
+            Dim nameStr As String
+            ' Extract the name part without the sheet prefix
+            nameStr = Split(cName.name, "!")(1)
+            Dim refersTo As String
+            refersTo = cName.refersTo
+            
+            ' Attempt to add the name to the workbook's global scope
+            On Error Resume Next
+            Dim newName As name
+            Set newName = targetWB.Names.Add(name:=nameStr, refersTo:=refersTo)
+            If Err.Number = 0 Then
+                ' If successful, copy the comment if it exists
+                If Not cName.Comment = "" Then
+                    newName.Comment = cName.Comment
+                End If
+            Else
+                ' Inform user if the name couldn’t be added (e.g., duplicate name)
+                MsgBox "Failed to add name '" & nameStr & "' to the global scope. It may already exist."
+                Err.Clear
+            End If
+            On Error GoTo 0
+        Next i
+    End If
+    
     MsgBox "Selected Names Copied."
 End Sub
 
@@ -99,19 +141,19 @@ Sub ChangeDefinedNamesScopeLocalToGlobal()
 '    Application.Calculation = xlCalculateManual
     Application.ScreenUpdating = False
 
-    Dim i As Long, cName As Name, newName As Name, tempName As Name
+    Dim i As Long, cName As name, newName As name, tempName As name
     Dim oldNameStr As String, tempNameStr As String, tempNameStrFull As String, newNameStrFull As String
     Dim newNameStr As String, newRefersTo As String, newComment As String
-    Dim x As Name
+    Dim x As name
     For i = 0 To UBound(selectedNames)
         'Debug.Print selectedNames(i)
         Set cName = GetNameObjByString(selectedNames(i), oWS)
-        oldNameStr = cName.Name
-        newNameStr = Split(cName.Name, "!")(1)
+        oldNameStr = cName.name
+        newNameStr = Split(cName.name, "!")(1)
         tempNameStr = newNameStr & "_"
-        newNameStrFull = "'" & oWB.Name & "'!" & newNameStr
-        tempNameStrFull = "'" & oWB.Name & "'!" & tempNameStr
-        newRefersTo = cName.RefersTo
+        newNameStrFull = "'" & oWB.name & "'!" & newNameStr
+        tempNameStrFull = "'" & oWB.name & "'!" & tempNameStr
+        newRefersTo = cName.refersTo
         newComment = cName.Comment
         
         Set tempName = oWB.Names.Add(tempNameStr, newRefersTo)
@@ -125,8 +167,8 @@ Sub ChangeDefinedNamesScopeLocalToGlobal()
         
         'Find all names that refers to the name and change their formula
         For Each x In oWB.Names
-            If Not InStr(1, x.RefersTo, oldNameStr) = 0 Then
-                x.RefersTo = Replace(x.RefersTo, oldNameStr, newNameStrFull)
+            If Not InStr(1, x.refersTo, oldNameStr) = 0 Then
+                x.refersTo = Replace(x.refersTo, oldNameStr, newNameStrFull)
             End If
         Next
         tempName.Delete
@@ -158,7 +200,7 @@ Sub ChangeDefinedNamesScopeGlobalToLocal()
 '    Application.Calculation = xlCalculateManual
     Application.ScreenUpdating = False
 
-    Dim i As Long, cName As Name, newName As Name, tempName As Name
+    Dim i As Long, cName As name, newName As name, tempName As name
     Dim oldNameStr As String, tempNameStr As String
     Dim newNameStr As String, newRefersTo As String, newComment As String
     
@@ -166,17 +208,17 @@ Sub ChangeDefinedNamesScopeGlobalToLocal()
         'Debug.Print selectedNames(i)
         
         Set cName = GetNameObjByString(selectedNames(i), oWB)
-        oldNameStr = "'" & oWB.Name & "'!" & cName.Name
+        oldNameStr = "'" & oWB.name & "'!" & cName.name
         
-        If Not InStr(1, oWS.Name, " ") = 0 Then
-            newNameStr = "'" & oWS.Name & "'!" & cName.Name
-            tempNameStr = "'" & oWS.Name & "'!" & cName.Name & "_"
+        If Not InStr(1, oWS.name, " ") = 0 Then
+            newNameStr = "'" & oWS.name & "'!" & cName.name
+            tempNameStr = "'" & oWS.name & "'!" & cName.name & "_"
         Else
-            newNameStr = oWS.Name & "!" & cName.Name
-            tempNameStr = oWS.Name & "!" & cName.Name & "_"
+            newNameStr = oWS.name & "!" & cName.name
+            tempNameStr = oWS.name & "!" & cName.name & "_"
         End If
         
-        newRefersTo = cName.RefersTo
+        newRefersTo = cName.refersTo
         newComment = cName.Comment
         
         Set tempName = oWS.Names.Add(newNameStr & "_", newRefersTo)
@@ -189,13 +231,13 @@ Sub ChangeDefinedNamesScopeGlobalToLocal()
         
         'Find all names that refers to the name and change their formula
         For Each x In oWB.Names
-            If Not InStr(1, x.RefersTo, oldNameStr) = 0 Then
+            If Not InStr(1, x.refersTo, oldNameStr) = 0 Then
 '                Do Until InStr(1, x.RefersTo, oldNameStr) = 0
 '                    x.RefersTo = Replace(x.RefersTo, oWS.Name & "!", oWB.Name & "!")
 '                Loop
                 
                 'Do Until InStr(1, x.RefersTo, oldNameStr) = 0
-                    x.RefersTo = Replace(x.RefersTo, oldNameStr, newNameStr)
+                    x.refersTo = Replace(x.refersTo, oldNameStr, newNameStr)
                 'Loop
             End If
         Next
@@ -214,7 +256,7 @@ Private Function GetAllOpenedWBNames() As String()
     
     For Each wb In Workbooks
         'If Not UCase(Split(wb.Name, ".")(1)) = "XLSB" Then
-            wbNameColl.Add wb.Name
+            wbNameColl.Add wb.name
         'End If
     Next
     wbNameArr = CStr_arr(CollToArr1D(wbNameColl))
@@ -228,7 +270,7 @@ Private Function GetAllSheetsNamesInWB(wb As Workbook) As String()
     ReDim sheetsName(wb.Sheets.count - 1)
     
     For Each cSheet In wb.Sheets
-        sheetsName(count) = cSheet.Name
+        sheetsName(count) = cSheet.name
         count = count + 1
     Next
     
@@ -237,19 +279,19 @@ End Function
 
 Private Function GetAllNamesInSheet(obj As Object) As String()
     Dim nameList As New Collection
-    Dim x As Name
+    Dim x As name
     If TypeOf obj Is Worksheet Then
         For Each x In obj.Names
-            If InStr(1, x.Name, obj.Name) > 0 Then
+            If InStr(1, x.name, obj.name) > 0 Then
                 'Debug.Print Split(x.name, "!")(1)
-                nameList.Add Split(x.Name, "!")(1)
+                nameList.Add Split(x.name, "!")(1)
             End If
         Next x
     ElseIf TypeOf obj Is Workbook Then
         For Each x In obj.Names
-            If InStr(1, x.Name, ".") = 0 And InStr(1, x.Name, "!") = 0 Then
+            If InStr(1, x.name, ".") = 0 And InStr(1, x.name, "!") = 0 Then
                 'Debug.Print Split(x.name, "!")(1)
-                nameList.Add x.Name
+                nameList.Add x.name
             End If
         Next x
     Else
@@ -259,14 +301,14 @@ Private Function GetAllNamesInSheet(obj As Object) As String()
     GetAllNamesInSheet = CStr_arr(CollToArr1D(nameList))
 End Function
 
-Private Function GetNameObjByString(str As String, obj As Object) As Name
-    Dim retName As Name
-    Dim x As Name
+Private Function GetNameObjByString(str As String, obj As Object) As name
+    Dim retName As name
+    Dim x As name
     If TypeOf obj Is Worksheet Then
         For Each x In obj.Names
-            If InStr(1, x.Name, obj.Name) > 0 Then
+            If InStr(1, x.name, obj.name) > 0 Then
                 'Debug.Print Split(x.name, "!")(1)
-                If InStr(1, x.Name, str) > 0 Then
+                If InStr(1, x.name, str) > 0 Then
                     Set retName = x
                     Exit For
                 End If
@@ -274,7 +316,7 @@ Private Function GetNameObjByString(str As String, obj As Object) As Name
         Next x
     ElseIf TypeOf obj Is Workbook Then
         For Each x In obj.Names
-            If x.Name = str Then
+            If x.name = str Then
                 Set retName = x
                 Exit For
             End If
@@ -288,7 +330,7 @@ End Function
 Private Function UFShowArrInList(arr As Variant, listboxTitle As String, Optional isMultiSelect As Boolean = True) As String()
 'UF to get user input
     Dim uf As UFBasic
-    Dim listbox1 As msforms.listbox
+    Dim listbox1 As MSForms.listbox
     
     Set uf = New UFBasic
     uf.Initialize 200, True
@@ -315,7 +357,7 @@ Private Sub UpdateChartSeriesReference(sht As Worksheet, oldStr As String, newSt
     Dim srsColl As SeriesCollection, srs As Series
     Set sht = ActiveSheet
     For Each chtObj In sht.ChartObjects
-        Debug.Print (chtObj.Name)
+        Debug.Print (chtObj.name)
         Set cht = chtObj.Chart
         Set srsColl = cht.SeriesCollection
         For Each srs In srsColl
@@ -353,7 +395,7 @@ End Sub
 
 Private Function UFShowComboBox(comboBoxArr As Variant) As String
     Dim uf As UFBasic
-    Dim comboBox As msforms.comboBox
+    Dim comboBox As MSForms.comboBox
     
     Set uf = New UFBasic
     uf.Initialize 400, True
@@ -371,20 +413,20 @@ Private Function UFShowComboBox(comboBoxArr As Variant) As String
     retStr = comboBox.Value
     UFShowComboBox = retStr
 End Function
-Private Sub PasteNameToSheet(oName As Name, targetSheet As Object, nameList() As String)
-    Dim newName As Name
+Private Sub PasteNameToSheet(oName As name, targetSheet As Object, nameList() As String)
+    Dim newName As name
     Dim newNameStr As String, newRefersTo As String
-    newNameStr = Split(oName.Name, "!")(1)
-    newRefersTo = oName.RefersTo
+    newNameStr = Split(oName.name, "!")(1)
+    newRefersTo = oName.refersTo
     
-    Do Until InStr(1, newRefersTo, oName.Parent.Name & "!") = 0
-        newRefersTo = Replace(newRefersTo, oName.Parent.Name & "!", targetSheet.Name & "!")
+    Do Until InStr(1, newRefersTo, oName.Parent.name & "!") = 0
+        newRefersTo = Replace(newRefersTo, oName.Parent.name & "!", targetSheet.name & "!")
     Loop
     
-    Do Until InStr(1, newRefersTo, "'" & oName.Parent.Name & "'!") = 0
-        newRefersTo = Replace(newRefersTo, "'" & oName.Parent.Name & "'!", "'" & targetSheet.Name & "'!")
+    Do Until InStr(1, newRefersTo, "'" & oName.Parent.name & "'!") = 0
+        newRefersTo = Replace(newRefersTo, "'" & oName.Parent.name & "'!", "'" & targetSheet.name & "'!")
     Loop
-    Set newName = targetSheet.Names.Add(Name:=newNameStr, RefersTo:=newRefersTo)
+    Set newName = targetSheet.Names.Add(name:=newNameStr, refersTo:=newRefersTo)
     newName.Comment = oName.Comment
     
     'check if the name refers to another defined name. If yes, paste that name once more
@@ -396,11 +438,11 @@ Private Sub PasteNameToSheet(oName As Name, targetSheet As Object, nameList() As
     Next i
 End Sub
 
-Private Sub WriteNameToSheet(oName As Name, row As Long, col As Long)
+Private Sub WriteNameToSheet(oName As name, row As Long, col As Long)
     'Dim newName As Name
     'Set newName = targetSheet.Names.Add(Name:=Split(oName.Name, "!")(1), RefersTo:=oName.RefersTo)
-    Cells(row, col) = Split(oName.Name, "!")(1)
-    Cells(row, col + 2) = "'" & oName.RefersTo
+    Cells(row, col) = Split(oName.name, "!")(1)
+    Cells(row, col + 2) = "'" & oName.refersTo
     Cells(row, col + 1) = oName.Comment
 End Sub
 
@@ -445,7 +487,7 @@ ErrHandler:
     isInitialised = False
 End Function
 
-Private Function ListBoxSelectedToArray(myListBox As msforms.listbox) As String()
+Private Function ListBoxSelectedToArray(myListBox As MSForms.listbox) As String()
     Dim i As Long, myArr As Variant, myColl As New Collection
     If Not myListBox.ListCount = 0 Then
         ReDim myArr(myListBox.ListCount - 1)
